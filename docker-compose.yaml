@@ -1,0 +1,36 @@
+version: "3.7"
+
+services:
+  item-app:
+    container_name: item-app
+    image: ghcr.io/gonewajetiket/item-app:v1
+    ports: 
+      - 80:8080
+    networks:
+      - item-app-network
+    # environment:
+    #   NODE_ENV: production
+    #   DB_HOST: item-db
+    restart: on-failure
+    depends_on:
+      - item-db
+
+  item-db:
+    container_name: item-db
+    image: mongo:3
+    ports: 
+      - 27017:27017
+    networks:
+      - item-app-network
+    volumes:
+      - "app-db:/data/db"
+    restart: on-failure 
+
+volumes:
+  app-db:
+    name: app-db
+
+networks:
+  item-app-network:
+    name: item-app-network
+    driver: bridge
