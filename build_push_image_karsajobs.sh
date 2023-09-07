@@ -3,7 +3,7 @@ printf '================================================\n'
 printf 'Build image\n'
 printf '================================================\n'
 # Melakukan perintah build image dilocal
-docker build -t karsajobs .
+docker build -t karsajobs:latest .
 sleep 10
 
 printf '================================================\n'
@@ -17,20 +17,13 @@ printf '================================================\n'
 printf 'Tag current docker images to meet with github packages\n'
 printf '================================================\n'
 # Menambahkan tag ke docker image karsajobs
-docker tag karsajobs ghcr.io/gonewajetiket/karsajobs
-sleep 10
-
-printf '================================================\n'
-printf 'Export our github token\n'
-printf '================================================\n'
-# Melakukan export github token yang akan digunakan untuk login ke github packages
-# export CR_PAT=YOUR_GITHUB_TOKEN
+docker tag karsajobs:latest ghcr.io/gonewajetiket/karsajobs:latest
 sleep 10
 
 printf '================================================\n'
 printf 'Login to github packages\n'
 printf '================================================\n'
-# Login ke github packages namun sebelumnya memastikan dulu github token telah di export
+# Login ke github packages namun sebelumnya memastikan dahulu github token telah di export
 echo $CR_PAT | docker login ghcr.io -u GonewajeTiket --password-stdin
 sleep 10
 
@@ -38,5 +31,5 @@ printf '================================================\n'
 printf 'Push current images to github packages\n'
 printf '================================================\n'
 # Melakukan push docker image ke container repository github packages
-docker push ghcr.io/gonewajetiket/karsajobs
+docker push ghcr.io/gonewajetiket/karsajobs:latest
 sleep 10

@@ -2,17 +2,22 @@
 # See: https://circleci.com/docs/configuration-reference
 version: 2.1
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/configuration-reference/#jobs
-# jobs:
-#   lint-dockerfile:
-#     # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
-#     # See: https://circleci.com/docs/configuration-reference/#executor-job
 orbs:
   docker: circleci/docker@2.2.0
   go : circleci/go@1.8.0
 
 jobs:
+  lint-dockerfile:
+    executor:
+      name: docker/hadolint
+      tag: 'v2.12.1-beta-debian'
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Lint Dockerfile
+          command: hadolint Dockerfile
+
   test-app:
     executor:
       name: go/default
@@ -26,13 +31,25 @@ jobs:
           name: Test Go App
           command: go test -v -short --count=1 $(go list ./...)
 
+  build-karsajobs:
+    docker:
+      - image: alpine:latest
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build and push image
+          command: |
+            docker build -t karsajobs:latest .
+            docker tag karsajobs:latest ghcr.io/gonewajetiket/karsajobs:latest
+            export CR_PAT=YOUR_GITHUB_TOKEN
+            echo $CR_PAT | docker login ghcr.io -u GonewajeTiket --password-stdin
+            docker push ghcr.io/gonewajetiket/karsajobs:latest
+
+
 workflows:
   main:
     jobs:
-      - docker/hadolint:
-          dockerfiles: Dockerfile
-          executor-class: medium
-          hadolint-tag: 2.2.0-debian
-          ignore-rules: DL4005,DL3008
-          trusted-registries: docker.io
+      - lint-dockerfile
       - test-app
+      - build-karsajobs
