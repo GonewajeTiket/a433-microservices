@@ -10,8 +10,24 @@ version: 2.1
 #     # See: https://circleci.com/docs/configuration-reference/#executor-job
 orbs:
   docker: circleci/docker@2.2.0
+  go : circleci/go@1.8.0
+
+jobs:
+  test-app:
+    executor:
+      name: go/default
+      tag: '1.16'
+    steps:
+      - checkout
+      - go/load-cache
+      - go/mod-download
+      - go/save-cache
+      - run:
+          name: Test Go App
+          command: go test -v -short --count=1 $(go list ./...)
+
 workflows:
-  lint:
+  main:
     jobs:
       - docker/hadolint:
           dockerfiles: Dockerfile
@@ -19,3 +35,4 @@ workflows:
           hadolint-tag: 2.2.0-debian
           ignore-rules: DL4005,DL3008
           trusted-registries: docker.io
+      - test-app
