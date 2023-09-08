@@ -1,0 +1,38 @@
+apiVersion: apps/v1                 # Menunjukkan kubernetes api version yang digunakan
+kind: Deployment                    # Kind/tipe dari resource yang digunakan yaitu deployment
+metadata:                           # Menunjukkan metada yang akan digunakan oleh deployment
+  name: karsajobs-dpl               # Nama dari deployment
+  labels:                           # Memberikan label dari deployment yaitu key app dengan value microservices dan key tier dengan value backend
+    app: microservices
+    tier: backend
+spec:                               # Menunjukkan spesifikasi dari deployment
+  replicas: 2                       # Deployment akan memiliki dua replika (pod)
+  selector:                         # Menunjukkan bagaimana pod dikelompokkan berdasarkan label dengan key tier dan value backend
+    matchLabels:
+      tier: backend
+  template:                         # Menunjukkan templat untuk membuat pod yang dimanage oleh deployment
+    metadata:                       # Metadata untuk pod yang dibuat oleh template
+      labels:                       # Memberikan label yaitu key app dengan value microservices dan key tier dengan value backend                     
+        app: microservices
+        tier: backend
+    spec:                           # Spesifikasi dari pod
+      containers:                   # Spesifik kontainer dari pod
+      - name: karsajobs             # Nama dari pod
+        image: ghcr.io/gonewajetiket/karsajobs      # Docker image yang akan digunakan oleh pod
+        ports:                      # Port yang akan digunakan oleh container karsajobs adalah 8080
+          - containerPort: 8080
+        env:                        # Environment variable dari container karsajobs
+          - name: APP_PORT          # Set env APP_PORT dengan nilai 8080
+            value: "8080"
+          - name: MONGO_HOST        # Set env MONGO_HOST dengan nilai mongodb yaitu nama dari statefulset mongodb
+            value: "mongodb"
+          - name: MONGO_USER        # Set env MONGO_USER yang value nya diambil dari mongo-secret dengan key MONGO_ROOT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret
+                key: MONGO_ROOT_USERNAME
+          - name: MONGO_PASS        # Set env MONGO_USER yang value nya diambil dari mongo-secret dengan key MONGO_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret
+                key: MONGO_ROOT_PASSWORD

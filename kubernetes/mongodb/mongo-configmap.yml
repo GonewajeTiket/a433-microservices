@@ -1,0 +1,8 @@
+apiVersion: v1                 # Menunjukkan kubernetes api version yang digunakan
+kind: ConfigMap                # Kind/tipe dari resource yang digunakan yaitu configmap, api object untuk menyimpan data
+metadata:                      # Menunjukkan metada yang akan digunakan oleh configmap
+  name: mongo-config           # Nama dari configmap
+data:                          # Menunjukkan bahwa data yang akan disimpan diconfigmap
+  mongo.conf: |                # Menunjukkan key dari configmap yaitu mongo.conf yang mana data diconfigmap yang akan diedit/mofidy adalah mongo.conf dan menambahkan config spesifik path mongo data directory
+    storage:
+      dbPath: /data/db
