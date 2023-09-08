@@ -1,0 +1,52 @@
+apiVersion: apps/v1                 # Menunjukkan kubernetes api version yang digunakan
+kind: StatefulSet                   # Kind/tipe dari resource yang digunakan yaitu statefulset
+metadata:                           # Menunjukkan metada yang akan digunakan oleh statefulset
+  name: mongodb                     # Nama dari statefulset
+  labels:                           # Memberikan label dari statefulset yaitu key app dengan value microservices
+    app: microservices
+spec:                               # Menunjukkan spesifikasi dari statefulset
+  selector:                         # Menunjukkan bagaimana pod dikelompokkan berdasarkan label dengan key app serta value microservice dan key tier serta value mongodb
+    matchLabels:
+      app: microservices
+      tier: mongo
+  serviceName: mongodb               # Memberikan nama dari servicename statefulset yaitu mongodb
+  replicas: 1                        # Statefulset akan memiliki satu replika (pod)        
+  minReadySeconds: 10                # Menunjukkan berapa lama pods baru harus tersedia
+  template:                          # Menunjukkan templat untuk membuat pod yang dimanage oleh statefulset
+    metadata:                        # Metadata untuk pod yang dibuat oleh template
+      labels:                        # Memberikan label yaitu key app dengan value microservices dan key tier dengan value mongo
+        app: microservices
+        tier: mongo
+    spec:                            # Spesifikasi dari pod
+      terminationGracePeriodSeconds: 10   # Menyatakan waktu saat dimana container di terminate
+      containers:                    # Spesifik kontainer dari pod
+      - image: mongo:3               # Docker image yang digunakan oleh container
+        name: mongodb                # Nama dari container
+        env:                         # Environment variable yang digunakan oleh container dengan masing-masing key dan value
+        - name: MONGO_INITDB_ROOT_USERNAME_FILE
+          value: /etc/mongo-credentials/MONGO_ROOT_USERNAME
+        - name: MONGO_INITDB_ROOT_PASSWORD_FILE
+          value: /etc/mongo-credentials/MONGO_ROOT_PASSWORD
+        ports:                       # Port yang digunakan oleh container mongodb
+        - containerPort: 27017
+          name: mongodb
+        volumeMounts:                # Menyatakan path yang akan dimount oleh volume dicontainer
+        - name: mongo-persistent-volume
+          mountPath: /data/db
+        - name: configmap-volume
+          mountPath: /config
+        - name: mongo-secret
+          mountPath: /etc/mongo-credentials
+      volumes:                      # Menyatakan definisi dari volume yang akan diclaim, baik itu menggunakan pvc, configmap dan juga secret
+      - name: mongo-persistent-volume
+        persistentVolumeClaim:
+          claimName: mongo-pv-claim
+      - name: configmap-volume
+        configMap:
+          name: mongo-config
+          items: 
+            - key: mongo.conf
+              path: mongo.conf
+      - name: mongo-secret
+        secret:
+          secretName: mongo-secret

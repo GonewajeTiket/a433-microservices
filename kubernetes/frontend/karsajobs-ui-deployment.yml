@@ -1,0 +1,23 @@
+apiVersion: apps/v1                 # Menunjukkan kubernetes api version yang digunakan
+kind: Deployment                    # Kind/tipe dari resource yang digunakan yaitu deployment
+metadata:                           # Menunjukkan metada yang akan digunakan oleh deployment
+  name: karsajobs-ui-dpl            # Nama dari deployment
+  labels:                           # Memberikan label dari deployment yaitu key app dengan value microservices dan key tier dengan value frontend
+    app: microservices
+    tier: frontend
+spec:                               # Menunjukkan spesifikasi dari deployment
+  replicas: 1                       # Deployment akan memiliki satu replika (pod)
+  selector:                         # Menunjukkan bagaimana pod dikelompokkan berdasarkan label dengan key tier dan value frontend
+    matchLabels:
+      tier: frontend
+  template:                         # Menunjukkan templat untuk membuat pod yang dimanage oleh deployment
+    metadata:                       # Metadata untuk pod yang dibuat oleh template
+      labels:                       # Memberikan label yaitu key app dengan value microservices dan key tier dengan value frontend               
+        app: microservices
+        tier: frontend
+    spec:                           # Spesifikasi dari pod
+        containers:                 # Spesifik kontainer dari pod
+        - name: karsajobs-ui        # Nama dari pod
+          image: ghcr.io/gonewajetiket/karsajobs-ui      # Docker image yang akan digunakan oleh pod
+          ports:                    # Port yang akan digunakan oleh container karsajobs adalah 8000
+          - containerPort: 8000

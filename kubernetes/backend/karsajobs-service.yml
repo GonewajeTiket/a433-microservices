@@ -1,0 +1,14 @@
+apiVersion: v1                 # Menunjukkan kubernetes api version yang digunakan
+kind: Service                  # Kind/tipe dari resource yang digunakan yaitu service
+metadata:                      # Menunjukkan metada yang akan digunakan oleh service
+  name: karsajobs-svc          # Nama dari service
+  labels:                      # Memberikan label dari service yaitu key app dengan value microservices
+    app: microservices
+spec:                          # Menunjukkan spesifikasi dari service
+  type: NodePort               # Menunjukkan tipe dari service adalah nodeport dimana service akan diekspose pada tiap node dicluster dan dapat diakses menggunakan node ip dan node port 
+  ports:                       # Menunjukkan port yang terbuka untuk service
+  - port: 8080                 # Port yang akan dilisten oleh service
+    targetPort: 8080           # Port yang akan memforward traffic oleh service
+    nodePort: 32222            # Memberikan spesifik port yang akan diopen ditiap node sehingga dapat diakses pada pod tersebut
+  selector:                    # Menunjukkan bagaimana service dikelompokkan berdasarkan label dengan key tier dan value backend
+    tier: backend
