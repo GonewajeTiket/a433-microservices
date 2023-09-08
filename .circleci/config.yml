@@ -1,32 +1,32 @@
 # Use the latest 2.1 version of CircleCI pipeline process engine.
 # See: https://circleci.com/docs/configuration-reference
-version: 2.1
+version: 2.1                                # Konfigurasi pipeline circleci menggunakan spesifik versi 2.1
 
-orbs:
-  docker: circleci/docker@2.2.0
-  go : circleci/go@1.8.0
+orbs:                                       # Menggunakan orbs yaitu reusabale packages dari circleci config
+  docker: circleci/docker@2.2.0             # Menggunakan docker orbs untuk task yang berhubungan dengan docker
+  go : circleci/go@1.8.0                    # Menggunakan docker orbs untuk task yang berhubungan dengan bahasa go
 
-jobs:
-  lint-dockerfile:
-    executor:
-      name: docker/hadolint
-      tag: 'v2.12.1-beta-debian'
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Lint Dockerfile
-          command: hadolint Dockerfile
+jobs:                                       # Mendifinisikan job yang ada dan digunakan
+  lint-dockerfile:                          # Judul atau title dari job
+    executor:                               # Menunjukkan bahwa jobs menggunakan executor
+      name: docker/hadolint                 # Job menggunakan executor docker dengan image hadolint
+      tag: 'v2.12.1-beta-debian'            # Tag dari docker image hadolint yang digunakan yaitu v2.12.1-beta-debian
+    steps:                                  # Urutan step atau langkah-langkah yang akan dijalankan dari job lint-dockerfile
+      - checkout                            # Melakukan perintah checkout dari repository
+      - setup_remote_docker                 # Menggunakan remote docker environment, dimana tiap command 'docker' akan dieksekusi secara lokal di vm yang digunakan untuk menjalankan container docker utama
+      - run:                                # Menjalankan atau mengeksekusi sebuah perintah/command
+          name: Lint Dockerfile             # Nama dari perintah ataupun eksekusi yang akan dijalankan
+          command: hadolint Dockerfile      # Command yang akan dijalankan yaitu hadolint Dockerfile (nama dockerfile)
 
-  build-karsajobs:
-    docker:
-      - image: cimg/base:current
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Build and push image
-          command: |
+  build-karsajobs:                          # Judul atau title dari job
+    docker:                                 # Eksekutor yang digunakan adalah docker
+      - image: cimg/base:current            # Docker image yang digunakan adalah cimg/base dengan versi current
+    steps:                                  # Urutan step atau langkah-langkah yang akan dijalankan dari job test-app
+      - checkout                            # Melakukan perintah checkout dari repository
+      - setup_remote_docker                 # Menggunakan remote docker environment, dimana tiap command 'docker' akan dieksekusi secara lokal di vm yang digunakan untuk menjalankan container docker utama
+      - run:                                # Menjalankan atau mengeksekusi sebuah perintah/command
+          name: Build and push image        # Nama dari perintah ataupun eksekusi yang akan dijalankan
+          command: |                        # Perintahkan yang akan dijalankan, karena terdapat banyak command makan digunakan tanda pipe |
             docker build -t karsajobs-ui:latest .
             docker tag karsajobs-ui:latest ghcr.io/gonewajetiket/karsajobs-ui:latest
             export CR_PAT=YOUR_GITHUB_TOKEN
@@ -34,8 +34,8 @@ jobs:
             docker push ghcr.io/gonewajetiket/karsajobs-ui:latest
 
 
-workflows:
-  main:
-    jobs:
+workflows:                                  # Menunjukkan workflow ataupun urutan job yang akan dijalankan
+  build-karsajobs-ui:                       # Judul dari workflow
+    jobs:                                   # Daftar job yang akan dijalankan dari workflow dan akan dieksekusi secara berurutan
       - lint-dockerfile
       - build-karsajobs
