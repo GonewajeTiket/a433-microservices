@@ -1,0 +1,26 @@
+NAME                                READY   STATUS    RESTARTS      AGE
+pod/order-dpl-5b859fff8d-grnrl      2/2     Running   0             6m33s
+pod/rabbitmq-0                      1/1     Running   2 (83m ago)   6h12m
+pod/shipping-dpl-5976757c58-v5ds6   2/2     Running   0             6m30s
+
+NAME                   TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)           AGE
+service/order-svc      NodePort   10.102.39.79     <none>        3000:32222/TCP    6h23m
+service/rabbitmq       NodePort   10.103.175.218   <none>        5672:31438/TCP    6h21m
+service/rabbitmq-svc   NodePort   10.103.230.244   <none>        15672:30047/TCP   6h21m
+service/shipping-svc   NodePort   10.97.210.37     <none>        3001:31111/TCP    6h25m
+
+NAME                           READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/order-dpl      1/1     1            1           6h10m
+deployment.apps/shipping-dpl   1/1     1            1           6h10m
+
+NAME                                      DESIRED   CURRENT   READY   AGE
+replicaset.apps/order-dpl-5b859fff8d      1         1         1       6m33s
+replicaset.apps/order-dpl-866b4fc584      0         0         0       6h10m
+replicaset.apps/order-dpl-b6f56dc8        0         0         0       6h3m
+replicaset.apps/order-dpl-b76887cd        0         0         0       92m
+replicaset.apps/shipping-dpl-5976757c58   1         1         1       6m30s
+replicaset.apps/shipping-dpl-759d9c5cb    0         0         0       91m
+replicaset.apps/shipping-dpl-cb66cdd97    0         0         0       6h10m
+
+NAME                        READY   AGE
+statefulset.apps/rabbitmq   1/1     6h12m
