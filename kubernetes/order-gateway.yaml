@@ -1,0 +1,33 @@
+apiVersion: networking.istio.io/v1alpha3         # Menunjukkan versi api dari istio yang digunakan
+kind: Gateway                                    # Menggunakan kind/tipe istio gateway
+metadata:                                        # Menunjukkan metadata dari object gateway yang akan digunakan
+  name: order-shipping-gateway                   # Nama dari istio gateway   
+spec:                                            # Spesifikasi dari istio gateway
+  selector:                                      # Menunjukkan selector yang digunakan oleh istio gateway dalam hal ini istio default ingress gateway controller
+    istio: ingressgateway # use istio default controller
+  servers:                                       # Menunjukkan daftar server yang akan dilisten oleh gateway
+  - port:                                        # Istio gateway akan listen ke port 80
+      number: 80
+      name: http                                 # Nama dari port adalah http
+      protocol: HTTP                             # Protokol yang digunakan adalah http
+    hosts:                                       # Spesifik host yang diperbolehkan melewati gateway adalah semua host
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3         # Menunjukkan versi api dari istio yang digunakan
+kind: VirtualService                             # Menggunakan kind/tipe istio virtual service
+metadata:                                        # Menunjukkan metadata dari object VS yang akan digunakan
+  name: order-shipping                           # Nama dari object virtual service
+spec:                                            # Spesifikasi dari object istio virtual service
+  hosts:                                         # Spesifik host yang akan digunakan oleh istio vs adalah semua host
+  - "*"
+  gateways:                                      # Gateway yang akan dilalui oleh istio vs adalah order-shipping-gateway
+  - order-shipping-gateway
+  http:                                          # Konfigurasi spesifik routing dari istio vs
+  - match:                                       # Spesifik URL yang akan digunakan oleh routing rules adalah exact URL /order
+    - uri:
+        exact: /order
+    route:                                       # Spesifik URL akan diteruskan dengan tujuan berdasarkan host dan port
+    - destination:
+        host: order-svc                          # Host adalah service dari app order-service
+        port:                                    # Listen port yang digunakan oleh container order-service yaitu port 3000
+          number: 3000

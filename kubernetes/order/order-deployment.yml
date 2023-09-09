@@ -1,0 +1,32 @@
+apiVersion: apps/v1                 # Menunjukkan kubernetes api version yang digunakan
+kind: Deployment                    # Kind/tipe dari resource yang digunakan yaitu deployment
+metadata:                           # Menunjukkan metada yang akan digunakan oleh deployment
+  name: order-dpl                   # Nama dari deployment
+  namespace: ecommerce-ns           # Mengarahkan object ke namespace 'ecommerce-ns'
+  labels:                           # Memberikan label dari deployment yaitu key app dengan value microservices dan key tier dengan value order
+    app: microservices
+    tier: order
+spec:                               # Menunjukkan spesifikasi dari deployment
+  replicas: 2                       # Deployment akan memiliki dua replika (pod)
+  selector:                         # Menunjukkan bagaimana pod dikelompokkan berdasarkan label dengan key tier dan value order
+    matchLabels:
+      tier: order
+  template:                         # Menunjukkan templat untuk membuat pod yang dimanage oleh deployment
+    metadata:                       # Metadata untuk pod yang dibuat oleh template
+      labels:                       # Memberikan label yaitu key app dengan value microservices dan key tier dengan value order                     
+        app: microservices
+        tier: order
+    spec:                           # Spesifikasi dari pod
+      containers:                   # Spesifik kontainer dari pod
+      - name: order-service         # Nama dari pod
+        image: ghcr.io/gonewajetiket/order-service      # Docker image yang akan digunakan oleh pod
+        ports:                      # Port yang akan digunakan oleh container order adalah 3000
+          - containerPort: 3000
+        env:                        # Environment variable dari container order
+          - name: NODE_ENV          # Set env NODE_ENV dengan value production
+            value: "production"
+          - name: AMQP_URL        # Set env AMQP_URL yang value nya diambil dari rabbitmq-secret dengan key RABBITMQ_HOST_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: rabbitmq-secret
+                key: RABBITMQ_HOST_PASSWORD
