@@ -1,0 +1,28 @@
+apiVersion: v1                 # Menunjukkan kubernetes api version yang digunakan
+kind: PersistentVolume         # Kind/tipe dari resource yang digunakan yaitu PersistentVolume untuk membuat volume
+metadata:                      # Menunjukkan metada yang akan digunakan oleh pv
+  name: rabbitmq-pv-volume     # Nama dari persistent volume
+  namespace: ecommerce-ns      # Mengarahkan object ke namespace 'ecommerce-ns'
+  labels:                      # Memberikan label dari persistent volume dengan key type dan value local
+    type: local
+spec:                          # Menunjukkan spesifikasi dari persistent volume
+  storageClassName: manual     # Memberikan spesifik name untuk storage class yaitu manual
+  capacity:                    # Memberikan kapasitas dari persistent volume yaitu 10Gi
+    storage: 10Gi
+  accessModes:                 # Memberikan access mode ke persistent volume yaitu RWO dimana bisa di RW oleh single node dalam satu waktu
+    - ReadWriteOnce
+  hostPath:                    # Menunjukkan spesifik path pada host yaitu /mnt/data
+    path: "/mnt/data"
+---
+apiVersion: v1                 # Menunjukkan kubernetes api version yang digunakan
+kind: PersistentVolumeClaim    # Kind/tipe dari resource yang digunakan yaitu PersistentVolumeClaim untuk mengclaim sebuah persistent volume
+metadata:                      # Menunjukkan metada yang akan digunakan oleh pvc
+  name: rabbitmq-pv-claim      # Nama dari pvc
+  namespace: ecommerce-ns      # Mengarahkan object ke namespace 'ecommerce-ns'
+spec:                          # Menunjukkan spesifikasi dari persistent volume claim
+  storageClassName: manual     # Memberikan spesifik name untuk storage class yaitu manual
+  accessModes:                 # Menunjukkan akses mode yang direquest oleh pvc ke pv yaitu RW
+    - ReadWriteOnce
+  resources:                   # Menunjukkan berapa banyak resource yang akan diclaim oleh pvc ke pv dalam kasus ini adalah 10Gi
+    requests:
+      storage: 10Gi
