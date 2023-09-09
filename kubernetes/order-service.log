@@ -1,0 +1,19 @@
+
+> order-service@1.0.0 start /app
+> node index.js
+
+Server running at 3000
+Connected to the queue!
+Order succesfully created!
+Order succesfully created!
+Order succesfully created!
+Order succesfully created!
+Order succesfully created!
+Order succesfully created!
+Order succesfully created!
+Order succesfully created!
+Order succesfully created!
+Order succesfully created!
+Order succesfully created!
+(node:18) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 SIGINT listeners added to [process]. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)

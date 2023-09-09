@@ -1,0 +1,2 @@
+NAME             GATEWAYS                     HOSTS   AGE
+order-shipping   ["order-shipping-gateway"]   ["*"]   5h40m
