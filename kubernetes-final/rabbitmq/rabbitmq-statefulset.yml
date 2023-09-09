@@ -1,0 +1,37 @@
+apiVersion: apps/v1                 # Menunjukkan kubernetes api version yang digunakan
+kind: StatefulSet                   # Kind/tipe dari resource yang digunakan yaitu statefulset
+metadata:                           # Menunjukkan metada yang akan digunakan oleh statefulset
+  name: rabbitmq                    # Nama dari statefulset
+  namespace: ecommerce-ns           # Mengarahkan object ke namespace 'ecommerce-ns'
+  labels:                           # Memberikan label dari statefulset yaitu key app dengan value microservices
+    app: microservices
+spec:                               # Menunjukkan spesifikasi dari statefulset
+  selector:                         # Menunjukkan bagaimana pod dikelompokkan berdasarkan label dengan key app serta value microservice dan key tier serta value rabbitmq
+    matchLabels:
+      app: microservices
+      tier: rabbitmq
+  serviceName: rabbitmq              # Memberikan nama dari servicename statefulset yaitu rabbitmq
+  replicas: 1                        # Statefulset akan memiliki satu replika (pod)        
+  minReadySeconds: 10                # Menunjukkan berapa lama pods baru harus tersedia
+  template:                          # Menunjukkan templat untuk membuat pod yang dimanage oleh statefulset
+    metadata:                        # Metadata untuk pod yang dibuat oleh template
+      labels:                        # Memberikan label yaitu key app dengan value microservices dan key tier dengan value rabbitmq
+        app: microservices
+        tier: rabbitmq
+    spec:                            # Spesifikasi dari pod
+      terminationGracePeriodSeconds: 10   # Menyatakan waktu saat dimana container di terminate
+      containers:                    # Spesifik kontainer dari pod
+      - image: rabbitmq:3.11-management        # Docker image yang digunakan oleh container
+        name: rabbitmq               # Nama dari container
+        ports:                       # Port yang digunakan oleh container rabbitmq
+        - containerPort: 5672
+        - containerPort: 15672
+        volumeMounts:                # Menyatakan path yang akan dimount oleh volume dicontainer
+        - name: rabbitmq-persistent-volume
+          mountPath: /var/lib/rabbitmq/
+        - name: rabbitmq-persistent-volume
+          mountPath: /var/log/rabbitmq
+      volumes:                       # Menyatakan definisi dari volume yang akan diclaim, baik itu menggunakan pvc, configmap dan juga secret
+      - name: rabbitmq-persistent-volume
+        persistentVolumeClaim:
+          claimName: rabbitmq-pv-claim
